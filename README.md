@@ -5,7 +5,7 @@ Deploy first origina rust-counter contract.
 Deploy second counter from this contract.
 Second counter can't be greater then first one.
 
-Run `something` method on the second contract to receive true/false if increment performed.
+Run `increment_with_bool_response` method on the second contract to receive true/false status if increment was properly performed.
 
 Original RUST-COUNTER readme:
 
