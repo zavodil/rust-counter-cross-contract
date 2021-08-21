@@ -1,9 +1,9 @@
 Cross-Contract Counter example in Rust
 =================================
 
-Deploy first origina rust-counter contract.
-Deploy second counter from this contract.
-Second counter can't be greater then first one.
+- Deploy first [original rust-counter contract](https://examples.near.org/rust-counter).
+- Deploy second counter using this contract and specify `FIRST_COUNTER_CONTRACT`
+- Second counter can't be greater then the first one.
 
 Run `increment_with_bool_response` method on the second contract to receive true/false status if increment was properly performed.
 
