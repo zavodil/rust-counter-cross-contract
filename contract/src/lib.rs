@@ -9,12 +9,10 @@
 //! [reset]: struct.Counter.html#method.reset
 
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::{env, near_bindgen, ext_contract, Promise, PromiseResult};
+use near_sdk::{env, near_bindgen, ext_contract, Gas, Promise, PromiseResult};
 
-near_sdk::setup_alloc!();
 
 const FIRST_COUNTER_CONTRACT: &str = "dev-1629132107910-66952924033593";
-
 // add the following attributes to prepare your code for serialization and invocation on the blockchain
 // More built-in Rust attributes here: https://doc.rust-lang.org/reference/attributes.html#built-in-attributes-index
 #[near_bindgen]
@@ -68,14 +66,14 @@ impl Counter {
         // e.g. self.val = i8::wrapping_add(self.val, 1);
         // https://doc.rust-lang.org/std/primitive.i8.html#method.wrapping_add
 
-        counter::get_num(&FIRST_COUNTER_CONTRACT, 0, 25_000_000_000_000)
-            .then(ext_self::on_get_num(&env::current_account_id(), 0, 25_000_000_000_000))
+        counter::get_num(FIRST_COUNTER_CONTRACT.parse().unwrap(), 0, Gas(25_000_000_000_000))
+            .then(ext_self::on_get_num(env::current_account_id(), 0, Gas(25_000_000_000_000)))
     }
 
     pub fn increment_with_bool_response(&mut self) -> Promise {
         self
         .increment()
-        .then(ext_self::on_increment_with_bool_response(&env::current_account_id(), 0, 25_000_000_000_000))
+        .then(ext_self::on_increment_with_bool_response(env::current_account_id(), 0, Gas(25_000_000_000_000)))
     }
 
     #[private]
@@ -94,7 +92,7 @@ impl Counter {
 
         self.val += 1;
         let log_message = format!("Increased number to {}", self.val);
-        env::log(log_message.as_bytes());
+        env::log_str(log_message.as_str());
         after_counter_change();
     }
 
@@ -113,7 +111,7 @@ impl Counter {
         // https://doc.rust-lang.org/std/primitive.i8.html#method.wrapping_sub
         self.val -= 1;
         let log_message = format!("Decreased number to {}", self.val);
-        env::log(log_message.as_bytes());
+        env::log_str(log_message.as_str());
         after_counter_change();
     }
 
@@ -121,7 +119,7 @@ impl Counter {
     pub fn reset(&mut self) {
         self.val = 0;
         // Another way to log is to cast a string into bytes, hence "b" below:
-        env::log(b"Reset counter to zero");
+        env::log_str("Reset counter to zero");
     }
 }
 
@@ -130,7 +128,7 @@ impl Counter {
 // while this function cannot be invoked directly on the blockchain, it can be called from an invoked function
 fn after_counter_change() {
     // show helpful warning that i8 (8-bit signed integer) will overflow above 127 or below -128
-    env::log("Make sure you don't overflow, my friend.".as_bytes());
+    env::log_str("Make sure you don't overflow, my friend.");
 }
 
 /*
@@ -144,20 +142,17 @@ fn after_counter_change() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use near_sdk::MockedBlockchain;
-    use near_sdk::testing_env;
+    use near_sdk::{AccountId, testing_env};
     use near_sdk::test_utils::VMContextBuilder;
-    use near_sdk::json_types::ValidAccountId;
-    use near_sdk::serde::export::TryFrom;
 
-    // simple helper function to take a string literal and return a ValidAccountId
-    fn to_valid_account(account: &str) -> ValidAccountId {
-        ValidAccountId::try_from(account.to_string()).expect("Invalid account")
+    // simple helper function to take a string literal and return a AccountId
+    fn to_valid_account(account: &str) -> AccountId {
+        account.parse().expect("Invalid account")
     }
 
     // part of writing unit tests is setting up a mock context
     // provide a `predecessor` here, it'll modify the default context
-    fn get_context(predecessor: ValidAccountId) -> VMContextBuilder {
+    fn get_context(predecessor: AccountId) -> VMContextBuilder {
         let mut builder = VMContextBuilder::new();
         builder.predecessor_account_id(predecessor);
         builder

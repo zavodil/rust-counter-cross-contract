@@ -1,4 +1,4 @@
-pub use near_sdk::json_types::{Base64VecU8, ValidAccountId, WrappedDuration, U64};
+pub use near_sdk::json_types::{Base64VecU8, U64};
 use near_sdk::serde_json::json;
 use near_sdk_sim::{call, view, deploy, init_simulator, ContractAccount, UserAccount};
 use rust_counter_tutorial::CounterContract;
