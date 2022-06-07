@@ -1,17 +1,17 @@
 [package]
 name = "rust-counter-tutorial"
-version = "0.1.0"
-authors = ["Near Inc <hello@near.org>"]
+version = "0.2.0"
+authors = ["Near Inc <hello@near.org>", "Nikita Kuznetsov <n@8gen.team>"]
 edition = "2018"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-near-sdk = "4.0.0-pre.7"
+near-sdk = "4.0.0-pre.9"
 
 [dev-dependencies]
-near-sdk-sim = "4.0.0-pre.7"
+near-sdk-sim = "4.0.0-pre.9"
 
 [profile.release]
 codegen-units = 1
